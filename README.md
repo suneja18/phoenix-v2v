@@ -1,3 +1,4 @@
+
 # HerGuardian
 
 **Tech for Women's Safety & Security** — a smart safety system that combines a mobile app with a safety trigger embedded into something already carried every day: a school/college ID card.
@@ -121,3 +122,21 @@ Requires Flutter SDK and a connected device or emulator. For testing the SOS flo
 ## Team
 
 Built for SafeSphere: Tech for Women's Safety & Security.
+
+# women_safety_app
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
+
