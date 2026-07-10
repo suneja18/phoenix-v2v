@@ -3,12 +3,13 @@ import 'package:permission_handler/permission_handler.dart';
 import 'emergency_contacts_screen.dart';
 
 class PermissionScreen extends StatefulWidget {
+  const PermissionScreen({super.key});
+
   @override
-  _PermissionScreenState createState() => _PermissionScreenState();
+  State<PermissionScreen> createState() => _PermissionScreenState();
 }
 
 class _PermissionScreenState extends State<PermissionScreen> {
-
   Future<void> requestPermissions() async {
     await [
       Permission.location,
@@ -24,10 +25,11 @@ class _PermissionScreenState extends State<PermissionScreen> {
     super.initState();
     requestPermissions();
 
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => EmergencyContactsScreen()),
+        MaterialPageRoute(builder: (context) => const EmergencyContactsScreen()),
       );
     });
   }
@@ -35,8 +37,8 @@ class _PermissionScreenState extends State<PermissionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Permissions")),
-      body: Center(
+      appBar: AppBar(title: const Text("Permissions")),
+      body: const Center(
         child: Text("Requesting permissions..."),
       ),
     );

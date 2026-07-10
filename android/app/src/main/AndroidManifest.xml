@@ -10,7 +10,7 @@
     <uses-feature android:name="android.hardware.telephony" android:required="false"/>
 
     <application
-        android:label="women_safety_app"
+        android:label="HerGuardian"
 
         android:icon="@mipmap/ic_launcher">
 

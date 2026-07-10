@@ -2,36 +2,33 @@ import 'package:flutter/material.dart';
 import 'permission_screen.dart';
 
 class OtpScreen extends StatelessWidget {
-  final otp = TextEditingController();
+  const OtpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final otp = TextEditingController();
+
     return Scaffold(
-      appBar: AppBar(title: Text("OTP Verification")),
+      appBar: AppBar(title: const Text("OTP Verification")),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
-            Text("Enter OTP sent to your phone"),
-
+            const Text("Enter OTP sent to your phone"),
             TextField(
               controller: otp,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: "OTP"),
+              decoration: const InputDecoration(labelText: "OTP"),
             ),
-
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PermissionScreen()),
-
-                  );
-                },
-                child: Text("Verify"),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PermissionScreen()),
+                );
+              },
+              child: const Text("Verify"),
             ),
           ],
         ),

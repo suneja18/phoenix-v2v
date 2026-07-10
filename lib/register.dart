@@ -1,42 +1,39 @@
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatelessWidget {
-  final name = TextEditingController();
-  final email = TextEditingController();
-  final password = TextEditingController();
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final name = TextEditingController();
+    final email = TextEditingController();
+    final password = TextEditingController();
+
     return Scaffold(
-      appBar: AppBar(title: Text("Register")),
+      appBar: AppBar(title: const Text("Register")),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
             TextField(
               controller: name,
-              decoration: InputDecoration(labelText: "Name"),
+              decoration: const InputDecoration(labelText: "Name"),
             ),
-
             TextField(
               controller: email,
-              decoration: InputDecoration(labelText: "Email"),
+              decoration: const InputDecoration(labelText: "Email"),
             ),
-
             TextField(
               controller: password,
               obscureText: true,
-              decoration: InputDecoration(labelText: "Password"),
+              decoration: const InputDecoration(labelText: "Password"),
             ),
-
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/otp');
               },
-              child: Text("Register"),
+              child: const Text("Register"),
             ),
           ],
         ),
