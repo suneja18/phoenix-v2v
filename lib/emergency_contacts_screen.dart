@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'contact_model.dart';
 import 'services/contact_storage_service.dart';
 import 'theme/app_colors.dart';
+import 'home_screen.dart';
 
 class EmergencyContactsScreen extends StatefulWidget {
   const EmergencyContactsScreen({super.key});
@@ -158,6 +159,10 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Contacts saved")),
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
     );
   }
 

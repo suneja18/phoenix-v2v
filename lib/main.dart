@@ -6,6 +6,7 @@ import 'splash_screen.dart';
 import 'login.dart';
 import 'register.dart';
 import 'otp.dart';
+import 'home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
         '/otp': (context) => OtpScreen(),
+        '/home': (context) => const HomeScreen(),
       },
     );
   }
