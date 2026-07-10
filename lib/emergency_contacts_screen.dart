@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'contact_model.dart';
 import 'services/contact_storage_service.dart';
 import 'theme/app_colors.dart';
+import 'localization/translations.dart';
+import 'localization/language_switcher.dart';
+import 'localization/app_language.dart';
 import 'home_screen.dart';
 
 class EmergencyContactsScreen extends StatefulWidget {
@@ -44,18 +47,19 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(isPrimary ? "Add Primary Contact" : "Add Backup Contact"),
+        title: Text(isPrimary ? tr('primary_contacts') : tr('backup_contacts')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: "Name"),
+              decoration: InputDecoration(labelText: tr('name')),
             ),
             TextField(
               controller: phoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: "Phone"),
+              decoration:
+              InputDecoration(labelText: tr('emergency_contact_phone')),
             ),
           ],
         ),
@@ -115,6 +119,14 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
           ),
         ),
         const SizedBox(height: 8),
+        if (contacts.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              tr('no_contacts_yet'),
+              style: TextStyle(color: AppColors.navy.withValues(alpha: 0.6)),
+            ),
+          ),
         ...contacts.asMap().entries.map((entry) {
           final i = entry.key;
           final c = entry.value;
@@ -138,8 +150,8 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
         OutlinedButton.icon(
           onPressed: () => addContact(isPrimary),
           icon: const Icon(Icons.add, color: AppColors.navy),
-          label: const Text("Add Contact",
-              style: TextStyle(color: AppColors.navy)),
+          label:
+          Text(tr('add_contact'), style: const TextStyle(color: AppColors.navy)),
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: AppColors.navy),
             shape: RoundedRectangleBorder(
@@ -158,7 +170,7 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
     await ContactStorageService.saveContacts(all);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Contacts saved")),
+      SnackBar(content: Text(tr('contacts_saved'))),
     );
     Navigator.pushReplacement(
       context,
@@ -168,43 +180,54 @@ class _EmergencyContactsScreenState extends State<EmergencyContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: AppColors.navy)),
-      );
-    }
+    return ValueListenableBuilder<AppLang>(
+      valueListenable: AppLanguage.current,
+      builder: (context, _, __) {
+        if (_loading) {
+          return const Scaffold(
+            body:
+            Center(child: CircularProgressIndicator(color: AppColors.navy)),
+          );
+        }
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.navy,
-        foregroundColor: AppColors.cream,
-        title: const Text("Emergency Contacts"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildList("Primary Contacts", primaryContacts, true),
-              buildList(
-                  "Backup Contacts (Security/Warden)", backupContacts, false),
-              ElevatedButton(
-                onPressed: saveAll,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.navy,
-                  foregroundColor: AppColors.cream,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  minimumSize: const Size.fromHeight(48),
-                ),
-                child: const Text("Save All"),
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.navy,
+            foregroundColor: AppColors.cream,
+            title: Text(tr('ec_title')),
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: Center(child: LanguageSwitcher()),
               ),
             ],
           ),
-        ),
-      ),
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  buildList(tr('primary_contacts'), primaryContacts, true),
+                  buildList(tr('backup_contacts'), backupContacts, false),
+                  ElevatedButton(
+                    onPressed: saveAll,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.navy,
+                      foregroundColor: AppColors.cream,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      minimumSize: const Size.fromHeight(48),
+                    ),
+                    child: Text(tr('save_all')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

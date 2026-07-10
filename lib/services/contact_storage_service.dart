@@ -23,6 +23,12 @@ class ContactStorageService {
     }
   }
 
+  /// Appends a single contact without touching existing ones.
+  static Future<void> addContact(Contact contact) async {
+    final box = await _openBox();
+    await box.add(contact.toMap());
+  }
+
   static Future<List<Contact>> loadContacts() async {
     final box = await _openBox();
     return box.values

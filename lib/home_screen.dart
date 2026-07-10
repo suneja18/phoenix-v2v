@@ -1,15 +1,45 @@
 // home_screen.dart
 //
-// Main dashboard: central SOS button, Fake Call, Audio Record, Share Location,
-// and status chips. Audio/location actions are placeholders until
-// geolocator/record packages are wired in — SOS navigation is fully real.
+// Home = SOS trigger only, front and center. Everything else (Fake Call,
+// Audio Record, Share Location, Incident History, Profile) lives in a
+// swipeable slider dashboard below it.
 
 import 'package:flutter/material.dart';
 import 'theme/app_colors.dart';
+import 'localization/translations.dart';
+import 'localization/language_switcher.dart';
+import 'localization/app_language.dart';
 import 'emergency_screen.dart';
+import 'profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.78);
+    _pageController.addListener(() {
+      final next = _pageController.page?.round() ?? 0;
+      if (next != _currentPage) {
+        setState(() => _currentPage = next);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   void _placeholder(BuildContext context, String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -19,178 +49,189 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      appBar: AppBar(
-        backgroundColor: AppColors.navy,
-        foregroundColor: AppColors.cream,
-        title: const Text('HerGuardian'),
-        automaticallyImplyLeading: false,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              _StatusChipsRow(),
-              const SizedBox(height: 32),
+    return ValueListenableBuilder<AppLang>(
+      valueListenable: AppLanguage.current,
+      builder: (context, _, __) {
+        final slides = <_SlideData>[
+          _SlideData(
+            icon: Icons.phone_in_talk,
+            label: tr('fake_call'),
+            onTap: () => _placeholder(context, tr('fake_call')),
+          ),
+          _SlideData(
+            icon: Icons.mic,
+            label: tr('audio_record'),
+            onTap: () => _placeholder(context, tr('audio_record')),
+          ),
+          _SlideData(
+            icon: Icons.share_location,
+            label: tr('share_location'),
+            onTap: () => _placeholder(context, tr('share_location')),
+          ),
+          _SlideData(
+            icon: Icons.history,
+            label: tr('incident_history'),
+            onTap: () => _placeholder(context, tr('incident_history')),
+          ),
+          _SlideData(
+            icon: Icons.person,
+            label: tr('profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+          ),
+        ];
 
-              // Central SOS button
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const EmergencyScreen()),
-                  );
-                },
-                child: Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFFF6B6B),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFFF6B6B).withValues(alpha: 0.4),
-                        blurRadius: 24,
-                        spreadRadius: 4,
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'SOS',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Tap to trigger emergency mode',
-                style: TextStyle(color: AppColors.navy, fontSize: 13),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Secondary action grid
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1.3,
-                  children: [
-                    _ActionCard(
-                      icon: Icons.phone_in_talk,
-                      label: 'Fake Call',
-                      onTap: () => _placeholder(context, 'Fake Call'),
-                    ),
-                    _ActionCard(
-                      icon: Icons.mic,
-                      label: 'Audio Record',
-                      onTap: () => _placeholder(context, 'Audio Record'),
-                    ),
-                    _ActionCard(
-                      icon: Icons.share_location,
-                      label: 'Share Location',
-                      onTap: () => _placeholder(context, 'Share Location'),
-                    ),
-                    _ActionCard(
-                      icon: Icons.history,
-                      label: 'Incident History',
-                      onTap: () => _placeholder(context, 'Incident History'),
-                    ),
-                  ],
-                ),
+        return Scaffold(
+          backgroundColor: AppColors.cream,
+          appBar: AppBar(
+            backgroundColor: AppColors.navy,
+            foregroundColor: AppColors.cream,
+            title: const Text('HerGuardian'),
+            automaticallyImplyLeading: false,
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: Center(child: LanguageSwitcher()),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
+          body: SafeArea(
+            child: Column(
+              children: [
+                const Spacer(flex: 2),
 
-class _StatusChipsRow extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
-        _StatusChip(label: 'Online', icon: Icons.wifi),
-        _StatusChip(label: 'Triggers Active', icon: Icons.shield),
-        _StatusChip(label: 'Contacts Set', icon: Icons.contacts),
-      ],
-    );
-  }
-}
+                // Central SOS button — the only thing on the main screen
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const EmergencyScreen()),
+                    );
+                  },
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFFF6B6B),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF6B6B).withValues(alpha: 0.4),
+                          blurRadius: 28,
+                          spreadRadius: 6,
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'SOS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  tr('tap_to_trigger'),
+                  style: const TextStyle(color: AppColors.navy, fontSize: 13),
+                ),
 
-class _StatusChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  const _StatusChip({required this.label, required this.icon});
+                const Spacer(flex: 2),
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.lightBlue,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: AppColors.navy),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 11, color: AppColors.navy),
+                // Slider dashboard
+                Text(
+                  tr('swipe_for_more'),
+                  style: TextStyle(
+                    color: AppColors.navy.withValues(alpha: 0.6),
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 130,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: slides.length,
+                    itemBuilder: (context, index) {
+                      final slide = slides[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: _SlideCard(data: slide),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(slides.length, (i) {
+                    final active = i == _currentPage;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: active ? 18 : 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: active
+                            ? AppColors.navy
+                            : AppColors.navy.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class _ActionCard extends StatelessWidget {
+class _SlideData {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  _SlideData({required this.icon, required this.label, required this.onTap});
+}
 
-  const _ActionCard({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+class _SlideCard extends StatelessWidget {
+  final _SlideData data;
+  const _SlideCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      onTap: data.onTap,
+      borderRadius: BorderRadius.circular(20),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.lightBlue,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 30, color: AppColors.navy),
-            const SizedBox(height: 8),
+            Icon(data.icon, size: 34, color: AppColors.navy),
+            const SizedBox(height: 10),
             Text(
-              label,
+              data.label,
               style: const TextStyle(
                 color: AppColors.navy,
                 fontWeight: FontWeight.w600,
-                fontSize: 13,
+                fontSize: 14,
               ),
             ),
           ],
